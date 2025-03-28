@@ -8,6 +8,6 @@ supra_oracle = "0x5615001f63d3223f194498787647bb6f8d37b8d1e6773c00dcdd894079e561
 
 [dependencies.SupraFramework]
 git = "https://github.com/Entropy-Foundation/aptos-core.git"
-rev = "dev"
+rev = "aptosvm-v1.16_supra-v0.4.0"
 subdir = "aptos-move/framework/supra-framework"
 
