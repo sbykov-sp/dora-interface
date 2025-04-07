@@ -1,0 +1,13 @@
+[package]
+name = "core"
+version = "1.0.0"
+
+[addresses]
+supra_oracle = "0x987654321"
+
+
+[dependencies.SupraFramework]
+git = "https://github.com/Entropy-Foundation/aptos-core.git"
+rev = "aptosvm-v1.16_supra-v0.4.0"
+subdir = "aptos-move/framework/supra-framework"
+
