@@ -1,5 +1,5 @@
 module supra_oracle::supra_oracle_storage {
-    use supra_framework::timestamp;
+    use std::timestamp;
     use aptos_std::vector;
     use aptos_std::table::{Self, Table};
     use std::signer;
