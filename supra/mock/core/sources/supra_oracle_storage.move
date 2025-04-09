@@ -26,7 +26,7 @@ module supra_oracle::supra_oracle_storage {
 
 
     public entry fun set_price(account: &signer, pair: u32, value: u128) acquires PriceStore {
-        let price_store = borrow_global_mut<PriceStore>(signer::address_of(account));
+        let price_store = borrow_global_mut<PriceStore>(@supra_oracle);
         let now = timestamp::now_seconds();
 
         let price = Price {
@@ -50,8 +50,8 @@ module supra_oracle::supra_oracle_storage {
     native public fun get_oracle_holder_address(): address;
 
     #[view]
-    public fun get_price(pair: u32, account: address): (u128, u16, u64, u64) acquires PriceStore {
-        let price_store = borrow_global<PriceStore>(account);
+    public fun get_price(pair: u32): (u128, u16, u64, u64) acquires PriceStore {
+        let price_store = borrow_global<PriceStore>(@supra_oracle);
         if (table::contains(&price_store.prices, pair)) {
             let price = table::borrow(&price_store.prices, pair);
             (price.value, price.decimal, price.timestamp, price.round)
