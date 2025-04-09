@@ -1,6 +1,8 @@
 module supra_oracle::supra_oracle_storage {
     use supra_framework::timestamp;
     use aptos_std::vector;
+    use aptos_std::table::{Self, Table};
+    use std::signer;
 
     const DAY :u64 = 86400;
     const DECIMALS :u16 = 18;
@@ -14,6 +16,30 @@ module supra_oracle::supra_oracle_storage {
         round: u64
     }
 
+    struct PriceStore has key {
+        prices: Table<u32, Price>
+    }
+
+    public entry fun init_price_store(account: &signer) {
+        move_to(account, PriceStore { prices: table::new<u32, Price>() });
+    }
+
+
+    public entry fun set_price(account: &signer, pair: u32, value: u128) acquires PriceStore {
+        let price_store = borrow_global_mut<PriceStore>(signer::address_of(account));
+        let now = timestamp::now_seconds();
+
+        let price = Price {
+            pair,
+            value,
+            decimal: DECIMALS,
+            timestamp: now,
+            round: now / DAY
+        };
+
+        table::add(&mut price_store.prices, pair, price);
+    }
+
     #[view]
     /// Function which checks that is pair index is exist in OracleHolder
     native public fun does_pair_exist(pair_index: u32): bool;
@@ -24,11 +50,15 @@ module supra_oracle::supra_oracle_storage {
     native public fun get_oracle_holder_address(): address;
 
     #[view]
-    /// External view function
-    /// It will return the priceFeedData value for that particular tradingPair
-    public fun get_price(pair: u32): (u128, u16, u64, u64) {
-        let now = timestamp::now_seconds();
-        (mock_price(pair), DECIMALS, now, now/DAY)
+    public fun get_price(pair: u32, account: address): (u128, u16, u64, u64) acquires PriceStore {
+        let price_store = borrow_global<PriceStore>(account);
+        if (table::contains(&price_store.prices, pair)) {
+            let price = table::borrow(&price_store.prices, pair);
+            (price.value, price.decimal, price.timestamp, price.round)
+        } else {
+            let now = timestamp::now_seconds();
+            (mock_price(pair), DECIMALS, now, now / DAY)
+        }
     }
 
     #[view]
