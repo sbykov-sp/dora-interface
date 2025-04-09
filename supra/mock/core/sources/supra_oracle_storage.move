@@ -1,5 +1,4 @@
 module supra_oracle::supra_oracle_storage {
-    use std::timestamp;
     use aptos_std::vector;
     use aptos_std::table::{Self, Table};
     use std::signer;
@@ -27,14 +26,13 @@ module supra_oracle::supra_oracle_storage {
 
     public entry fun set_price(account: &signer, pair: u32, value: u128) acquires PriceStore {
         let price_store = borrow_global_mut<PriceStore>(@supra_oracle);
-        let now = timestamp::now_seconds();
 
         let price = Price {
             pair,
             value,
             decimal: DECIMALS,
-            timestamp: now,
-            round: now / DAY
+            timestamp: 1,
+            round: 1
         };
 
         table::add(&mut price_store.prices, pair, price);
@@ -56,8 +54,8 @@ module supra_oracle::supra_oracle_storage {
             let price = table::borrow(&price_store.prices, pair);
             (price.value, price.decimal, price.timestamp, price.round)
         } else {
-            let now = timestamp::now_seconds();
-            (mock_price(pair), DECIMALS, now, now / DAY)
+
+            (mock_price(pair), DECIMALS, 1, 1)
         }
     }
 
@@ -66,8 +64,6 @@ module supra_oracle::supra_oracle_storage {
         let res = vector::empty<Price>();
         let len = vector::length(&pairs);
         let i = 0;
-        let now = timestamp::now_seconds();
-        let round = now/DAY;
         while (i < len) {
             let p = *vector::borrow(&pairs, i);
             i = i + 1;
@@ -76,8 +72,8 @@ module supra_oracle::supra_oracle_storage {
                 pair:p,
                 value:mock_price(p),
                 decimal: DECIMALS,
-                timestamp:now,
-                round:round
+                timestamp:1,
+                round:1
             };
             vector::push_back(&mut res, price);
         };
