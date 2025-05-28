@@ -20,10 +20,9 @@ module supra_oracle::supra_oracle_storage {
         prices: Table<u32, Price>
     }
 
-    public entry fun init_price_store(account: &signer) {
+    fun init_module(account: &signer) {
         move_to(account, PriceStore { prices: table::new<u32, Price>() });
     }
-
 
     public entry fun set_price(pair: u32, value: u128, decimals: u16) acquires PriceStore {
         let price_store = borrow_global_mut<PriceStore>(@supra_oracle);
