@@ -102,4 +102,9 @@ module supra_oracle::supra_oracle_storage {
     native public fun get_derived_price(pair_id1: u32,pair_id2: u32,operation: u8): (u128, u16, u64, u8);
 
 
+    #[test_only]
+    public fun init_module_for_test(deployer: &signer) {
+        init_module(deployer);
+    }
+
 }
